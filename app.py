@@ -38,7 +38,11 @@ def predict():
         Arrival_hour = int(pd.to_datetime(date_arr, format ="%Y-%m-%dT%H:%M").hour)
         Arrival_min = int(pd.to_datetime(date_arr, format ="%Y-%m-%dT%H:%M").minute)
         # print("Arrival : ", Arrival_hour, Arrival_min)
-
+        
+         # Duration
+        dur_hour = abs(Arrival_hour - Dep_hour)
+        dur_min = abs(Arrival_min - Dep_min)
+        # print("Duration : ", dur_hour, dur_min)
 
         # Total Stops
         Total_stops = int(request.form["stops"])
@@ -326,6 +330,8 @@ def predict():
             Dep_min,
             Arrival_hour,
             Arrival_min,
+            dur_hour,
+            dur_min,
             Air_India,
             GoAir,
             IndiGo,
@@ -351,7 +357,11 @@ def predict():
         output=round(prediction[0],2)
         
         if Source == Destination:
-            return render_template('prediction.html',prediction_text="Please give a different Source and Destination Name")
+            return render_template('prediction.html',prediction_text="Please enter a different Source and Destination Name")
+        elif date_arr < date_dep or date_dep > date_arr:
+            return render_template('prediction.html',prediction_text="Please enter correct Departure date and Arrival date")
+        elif dur_hour > 48:
+            return render_template('prediction.html',prediction_text="Please enter correct Arrival Time")
         else:
             return render_template('prediction.html',prediction_text="Your Flight price is Rs. {}".format(output))
 
